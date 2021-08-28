@@ -1,0 +1,2 @@
+send "$edid_read c7,block1"
+exit
