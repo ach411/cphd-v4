@@ -7,10 +7,10 @@ SERIAL_DEVICE="${1:-/dev/ttyS18}"
 WRITE_TO="${2:-C1}"
 
 if [ -f rs232_config.sh ] ; then
-        . ./rs232_config.sh "$SERIAL_DEVICE"
-    else
-            echo "Error: Can't find rs232_config.sh"
-                exit 1
+    . ./rs232_config.sh "$SERIAL_DEVICE"
+else
+    echo "Error: Can't find rs232_config.sh"
+    exit 1
 fi
 
 #echo -ne '$help\r' > $SERIAL_DEVICE
