@@ -1,16 +1,12 @@
 #!/bin/bash
 
-# this script does not show response from device
-# Use `cat -v /dev/ttyS18` in a separate terminal to view response
-
+# Constants to modify:
 DEBUG="y" # anything else than empty string activates DEBUG mode
 DRY_RUN="" # anything else than empty string activates DRY_RUN mode (data are not effectively written to the device)
 
-test $DRY_RUN || echo "no dry run"
-
 set -euo pipefail
 
-test $DRY_RUN || echo "no dry run"
+test $DRY_RUN && echo "This is a dry run"
 
 EDID_BINARY="${1:-edid.bin}"
 SERIAL_DEVICE="${2:-/dev/ttyS18}"
@@ -53,6 +49,7 @@ block0=$(hexdump -n 128 -v -e '/1 "%02X "' $EDID_BINARY)
 test $DEBUG && echo "block0: $block0"
 
 # write block0 to the device
+(read -n25 -t5 RESP < $SERIAL_DEVICE; echo "Response from device: $RESP")&
 test $DRY_RUN || echo -ne "\$edid_write $WRITE_TO,block0 \r\n$block0\r\n" > $SERIAL_DEVICE
 
 if [ $SIZE_EDID_BINARY -eq 256 ] ; then
@@ -66,6 +63,10 @@ if [ $SIZE_EDID_BINARY -eq 256 ] ; then
     test $DEBUG && echo "block1: $block1"
 
     # write block1 to the device
+    (read -n25 -t5 RESP < $SERIAL_DEVICE; echo "Response from device: $RESP")&
     test $DRY_RUN || echo -ne "\$edid_write $WRITE_TO,block1 \r\n$block1\r\n" > $SERIAL_DEVICE
+
+    # Wait for the device to reply
+    sleep 2
 fi
 
