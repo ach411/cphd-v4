@@ -48,13 +48,13 @@ do
     test $DEBUG && echo "ARRAY VALUE 1: ${resp_array[0]}"
     test $DEBUG && echo "ARRAY VALUE 2: ${resp_array[1]}"
     #(read -rN700 -t4 RESP < $SERIAL_DEVICE; echo "$RESP" >> edid_read.$DATE_SUFFIX.hex)&
-    
+
     if [ ${#resp_array[@]} -ne 2 ] ; then
         echo "Error: Device did not return what was expected: ${resp_array[*]}"
         exit 1
     else
         echo "Response from device: ${resp_array[0]}"
-        echo "${resp_array[1]}" >> "$EDID_HEX"
+        echo "${resp_array[1]}" | sed 's/\([a-fA-F0-9 ]\{48\}\)/\1\n/g' >> "$EDID_HEX"
     fi
     )&
 
